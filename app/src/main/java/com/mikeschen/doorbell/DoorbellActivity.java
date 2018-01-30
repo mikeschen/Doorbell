@@ -14,6 +14,7 @@ import com.google.android.things.contrib.driver.button.ButtonInputDriver;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Map;
 
 public class DoorbellActivity extends Activity {
 
@@ -89,14 +90,19 @@ public class DoorbellActivity extends Activity {
                     final byte[] imageBytes = new byte[imageBuf.remaining()];
                     imageBuf.get(imageBytes);
                     image.close();
-
                     onPictureTaken(imageBytes);
                 }
             };
 
     private void onPictureTaken(final byte[] imageBytes) {
         if (imageBytes != null) {
-            // ...process the captured image...
+            try {
+                // Process the image using Cloud Vision
+                Map<String, Float> annotations = CloudVisionUtils.annotateImage(imageBytes);
+                Log.d(TAG, "cloud vision annotations:" + annotations);
+            } catch (IOException e) {
+                Log.e(TAG, "Cloud Vison API error: ", e);
+            }
         }
     }
 }
